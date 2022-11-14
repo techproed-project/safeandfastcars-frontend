@@ -1,8 +1,9 @@
 import React from 'react'
+import CustomRoutes from './router/custom-routes'
 
 const App = () => {
   return (
-    <div>Welcome to Safe & Fast Cars</div>
+    <CustomRoutes/>
   )
 }
 

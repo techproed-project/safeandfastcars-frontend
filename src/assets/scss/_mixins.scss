@@ -1,0 +1,12 @@
+@mixin reset-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+@mixin flexbox($flex-direction:row,$justify-content:flex-start,$align-items:flex-start,$gap:0){
+  display:flex;
+  flex-direction:$flex-direction;
+  justify-content:$justify-content;
+  align-items:$align-items;
+  gap:$gap;
+}

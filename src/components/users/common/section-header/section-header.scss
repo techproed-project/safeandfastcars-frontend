@@ -1,0 +1,17 @@
+@use "../../../../assets/scss/variables" as v;
+
+.section-header{
+    h5{
+        font-weight: 700;
+        font-size:1.5rem;
+        color:v.$color2;
+    }
+    h2{
+        font-weight: 700;
+        font-size:3rem;
+        color:v.$color2;
+    }
+    p{
+        color:v.$color5;
+    }
+}

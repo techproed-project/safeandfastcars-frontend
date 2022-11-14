@@ -1,0 +1,67 @@
+@use "../../../../assets/scss/variables" as v;
+
+.slider{
+    background-image: url("../../../../assets/img/slider/slider-bg.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    min-height: 500px;
+    display: flex;
+    position: relative;
+
+    &::after{
+        content: "";
+        background-image: linear-gradient(30deg, v.$color4 60%, v.$color5);
+        position: absolute;
+        top:0; left:0; right:0; bottom:0;
+    }
+
+
+    .carousel{
+        width:100%;
+
+        .carousel-inner{
+            height:100%;
+            .carousel-item{
+                height:100%;
+
+                img{
+                    position: absolute;
+                    right:0;
+                    bottom:0;
+
+                    @media (max-width: 1300px){
+                        display: none;
+                    }
+                }
+
+                .carousel-caption{
+                    top: 50%;
+                    transform: translateY(-50%);
+                    text-align: left;
+                    width:30%;
+                    left: 10%;
+                    z-index: 5;
+
+                    @media (max-width: 1300px){
+                        text-align: center;
+                        width:80%;
+                    }
+
+                    h3{
+                        color: v.$color1;
+                        font-size: 3rem;
+                        font-weight: 900;
+                        text-shadow: 0 0 15px white;
+                    }
+
+                    p{
+                        color: v.$color2;
+                        font-size: 1.2rem;
+                    }
+                }
+
+            }
+        }
+    }
+}

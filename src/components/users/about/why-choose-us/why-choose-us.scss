@@ -1,0 +1,41 @@
+@use "../../../../assets/scss/variables" as v;
+@use "../../../../assets/scss/mixins" as m;
+
+.why-choose-us{
+    text-align:center;
+    
+    ul{
+        @include m.reset-list();
+        @include m.flexbox(column,center,center,2rem);
+
+        li{
+            @include m.flexbox(row,flex-end,center,2rem);
+            text-align:center;
+            @media (max-width:400px){
+                @include m.flexbox(column,flex-start,center,2rem);
+            }
+            div{
+                &:first-child{
+                    flex-shrink: 0;
+                    @include m.flexbox(row,center,center,0);
+                    width:90px;
+                    height:90px;
+                    border-radius: 50%;
+                    background-color:v.$color4;
+
+                    svg{
+                        color:v.$color1;
+                        font-size:3rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (max-width:400px){
+    .btn-about{
+        margin-top:1rem;
+    }
+   
+}

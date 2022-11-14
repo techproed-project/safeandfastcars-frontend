@@ -1,0 +1,32 @@
+@use "../../../../assets/scss/variables" as v;
+@use "../../../../assets/scss/mixins" as m;
+
+.popular-vehicle{
+    text-align: left;
+
+    h2{
+        font-size: 3rem;
+        font-weight: 800;
+
+        sup{
+            font-weight: 500;
+            font-size: 2rem;
+        }
+    }
+
+    p{
+     border-bottom: 1px solid v.$color3;   
+    }
+
+    ul{
+        @include m.reset-list();
+        line-height: 2rem;
+        svg{
+            color: v.$color1;
+        }
+    }
+
+    @media (max-width: 767px){
+        text-align: center;
+    }
+}

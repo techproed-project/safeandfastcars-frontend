@@ -1,0 +1,10 @@
+@use "../../../../assets/scss/mixins" as m;
+
+.contact-info{
+    @include m.reset-list();
+    @include m.flexbox(column,flex-start,flex-start,1rem);
+
+    li{
+        line-height : 2rem;
+    }
+}

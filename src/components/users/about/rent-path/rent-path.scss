@@ -1,0 +1,22 @@
+@use "../../../../assets/scss/variables" as v;
+
+.rent-path{
+    text-align:center;
+
+    svg{
+        font-size:5rem;
+        color:v.$color1;
+        margin-bottom:1rem;
+    }
+    h2{
+        font-weight: 600;
+        margin-bottom:1rem;
+    }
+    p{
+        color:gray;
+    }
+    [class^="col"]{
+       padding-left:4rem ;
+       padding-right:4rem;
+    }
+}

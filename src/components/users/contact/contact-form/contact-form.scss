@@ -1,0 +1,15 @@
+@use "../../../../assets/scss/variables" as v;
+
+.contact-form{
+    label{
+        margin-left:2rem;
+        font-weight:600;
+    }
+    .invalid-feedback{
+        margin-left:2rem;
+    }
+    svg{
+        color:v.$color1;
+        font-size:1.5rem;
+    }
+}

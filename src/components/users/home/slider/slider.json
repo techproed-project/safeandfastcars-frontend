@@ -1,0 +1,16 @@
+[
+    {
+        "title":"Car Rent Service In Your City",
+        "description":"We offer rental deals at large airports like Norman Y. Mineta San Jose International Airport",
+        "buttonText":"Rent Now",
+        "buttonLink":"",
+        "image":"slider1.png"
+    },
+    {
+        "title":"Quality Cars with Unlimited Miles",
+        "description":"We also have convertible, luxury and premium options if you want a more upscale rental",
+        "buttonText":"Rent Now",
+        "buttonLink":"",
+        "image":"slider2.png"
+    }
+]

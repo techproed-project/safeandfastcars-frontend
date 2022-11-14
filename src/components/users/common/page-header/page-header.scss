@@ -1,0 +1,50 @@
+@use "../../../../assets/scss/variables" as v;
+
+.page-header{
+    background-image:url(../../../../assets/img/bg/page-header-bg.jpg);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height:300px;
+    position:relative;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    color:v.$color3;
+
+    &::after{
+        content:"";
+        position:absolute;
+        top:0;bottom:0;left:0;right:0;
+        background-color:v.$color1 ;
+        opacity:.6;
+    }
+    h1{
+        position:relative;
+        z-index:5;
+        font-size:4rem;
+        font-weight: 700;
+        text-shadow:0 0 30px black;
+
+        &::after,&::before{
+            content:"...";
+            font-size:4rem;
+            opacity:0.2;
+
+            @media (max-width:600px){
+                content:"";
+            }
+        }
+
+        @media (max-width:500px){
+            font-size:3.5rem;
+        }
+        @media (max-width:400px){
+            font-size:3rem;
+        }
+        @media (max-width:350px){
+            font-size:2rem;
+        }
+    }
+}
+

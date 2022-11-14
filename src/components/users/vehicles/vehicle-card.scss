@@ -1,0 +1,41 @@
+@use "../../../assets/scss/variables" as v;
+@use "../../../assets/scss/mixins" as m;
+
+.vehicle-card{
+    text-align: center;
+    border-color: v.$color4;
+
+    .card-title{
+        font-size: 1.5rem;
+        color: v.$color2;
+    }
+
+    .card-text{
+        font-size: 2rem;
+        font-weight: 600;
+        color: v.$color1;
+
+        span{
+            font-size: 1rem;
+            color: v.$color2; 
+        }
+    }
+
+    .card-footer{
+        @include m.flexbox(row);
+        padding:0;
+
+        a{
+            flex:1;
+            padding: 0.5rem;
+
+            &:first-child{
+                border-radius: 0 0 0 2rem;
+            }
+
+            &:last-child{
+                border-radius: 0 0 2rem 0;
+            }
+        }
+    }
+}

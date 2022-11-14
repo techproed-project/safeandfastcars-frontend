@@ -1,0 +1,28 @@
+@use "../../../assets/scss/variables" as v;
+@use "../../../assets/scss/mixins" as m;
+
+.vehicle-details{
+    .title{
+        @include m.flexbox(row, space-between, center, 0);
+    }
+
+    ul{
+        @include m.reset-list();
+        @include m.flexbox(row, space-between, center, 2rem);
+        flex-wrap: wrap;
+        text-align: center;
+        margin-top:2rem;
+
+        li{
+            flex: 0 0 150px;
+            @include m.flexbox(column, flex-start, center, 1rem);
+
+            svg{
+                font-size: 3rem;
+                color: v.$color1;
+            }
+        }
+
+        
+    }
+}

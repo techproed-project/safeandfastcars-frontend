@@ -1,0 +1,35 @@
+@use "../../../../assets/scss/variables" as v;
+@use "../../../../assets/scss/mixins" as m;
+
+.footer{
+    background-color: v.$color1;
+    padding: 5rem 0;
+
+    img{
+        margin-bottom: 1rem;
+    }
+
+    ul{
+        @include m.reset-list();
+
+        li{
+            line-height: 3rem;
+        }
+
+        a{
+            color: v.$color3;
+            text-decoration: none;
+
+            &:hover{
+                color: v.$color2;
+            }
+        }
+
+        
+    }
+
+    h2{
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+}
