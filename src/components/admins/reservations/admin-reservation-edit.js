@@ -12,9 +12,27 @@ import {
   Spinner,
 } from "react-bootstrap";
 import Loading from "../../common/loading/loading";
+import {
+  deleteReservation,
+  getReservationById,
+  updateReservation,
+} from "../../../api/reservation-service";
+import {
+  combineDateAndTime,
+  getDate,
+  getTime,
+} from "../../../utils/functions/date-time";
+import { getVehicles } from "../../../api/vehicle-service";
+import { question, toast } from "../../../utils/functions/swal";
+
+const statusData = ["CREATED", "CANCELLED", "DONE"];
 
 const AdminReservationEdit = () => {
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [vehicles, setVehicles] = useState([]);
+
   const { reservationId } = useParams();
   const navigate = useNavigate();
 
@@ -41,7 +59,38 @@ const AdminReservationEdit = () => {
     status: Yup.string().required("Select a status"),
   });
 
-  const onSubmit = async (values) => {};
+  const onSubmit = async (values) => {
+    setSaving(true);
+
+    const {
+      pickUpLocation,
+      dropOffLocation,
+      pickUpDate,
+      pickUpTime,
+      dropOffDate,
+      dropOffTime,
+      carId,
+      status,
+    } = values;
+
+    const dto = {
+      pickUpLocation,
+      dropOffLocation,
+      pickUpTime: combineDateAndTime(pickUpDate, pickUpTime),
+      dropOffTime: combineDateAndTime(dropOffDate, dropOffTime),
+      status,
+    };
+
+    try {
+      await updateReservation(reservationId, carId, dto);
+      toast("Reservation is updated", "success");
+    } catch (err) {
+      console.log(err);
+      toast(err.response.data.message, "error");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const formik = useFormik({
     initialValues,
@@ -49,6 +98,70 @@ const AdminReservationEdit = () => {
     onSubmit,
     enableReinitialize: true,
   });
+
+  const loadData = async () => {
+    try {
+      const respReservation = await getReservationById(reservationId);
+      const respVehicle = await getVehicles();
+
+      const {
+        pickUpLocation,
+        pickUpTime,
+        dropOffLocation,
+        dropOffTime,
+        status,
+        car,
+        userId,
+      } = respReservation.data;
+
+      const dto = {
+        pickUpLocation,
+        dropOffLocation,
+        pickUpDate: getDate(pickUpTime),
+        pickUpTime: getTime(pickUpTime),
+        dropOffDate: getDate(dropOffTime),
+        dropOffTime: getTime(dropOffTime),
+        carId: car.id,
+        status,
+        userId,
+      };
+
+      setInitialValues(dto);
+      setVehicles(respVehicle.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeReservation = async () => {
+    setDeleting(true);
+    try {
+      await deleteReservation(reservationId);
+      toast("Reservation was deleted", "success");
+      navigate(-1);
+    } catch (err) {
+      toast(err.response.data.message, "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDelete = () => {
+    question(
+      "Are you sure to delete?",
+      "You won't be able to revert this!"
+    ).then((result) => {
+      if (result.isConfirmed) {
+        removeReservation();
+      }
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return loading ? (
     <Loading />

@@ -1,8 +1,12 @@
 import React from 'react'
+import Unauthorized from '../../components/common/unauthorized/unauthorized'
+import UserTemplate from '../../templates/user-template'
 
 const UnauthorizedPage = () => {
   return (
-    <div>UnauthorizedPage</div>
+    <UserTemplate>
+      <Unauthorized/>
+    </UserTemplate>
   )
 }
 

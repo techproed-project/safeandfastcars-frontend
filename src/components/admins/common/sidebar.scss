@@ -1,0 +1,41 @@
+@use "../../../assets/scss/variables" as v;
+
+.admin-sidebar {
+  @media (min-width: 992px) {
+    padding: 2rem !important;
+    height: 100vh;
+    align-items: flex-start !important;
+  }
+
+  .container {
+    @media (min-width: 992px) {
+      flex-direction: column;
+      align-items: flex-start !important;
+    }
+
+    .navbar-brand {
+      img {
+        @media (max-width: 992px) {
+          width: 170px;
+          height: auto;
+        }
+      }
+    }
+
+    .navbar-nav {
+      @media (min-width: 992px) {
+        flex-direction: column;
+        margin-top: 2rem;
+        gap: 1.2rem;
+      }
+
+      .nav-link {
+        color: v.$color3;
+
+        svg {
+          color: v.$color1;
+        }
+      }
+    }
+  }
+}

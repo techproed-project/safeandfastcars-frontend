@@ -11,13 +11,24 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
-import "./admin-vehicle.scss";
 import Loading from "../../common/loading/loading";
+import { useNavigate, useParams } from "react-router-dom";
+import { deleteVehicle, deleteVehicleImage, getVehicle, updateVehicle, uploadVehicleImage } from "../../../api/vehicle-service";
+import { settings } from "../../../utils/settings";
+import { question, toast } from "../../../utils/functions/swal";
+
+let isImageChanged = false;
+
 
 const AdminVehicleEdit = () => {
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [imageSrc, setImageSrc] = useState("");
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const { vehicleId } = useParams();
+  const fileImageRef = useRef(null);
+
 
   const [initialValues, setInitialValues] = useState({
     model: "",
@@ -48,7 +59,44 @@ const AdminVehicleEdit = () => {
   });
 
   const onSubmit = async (values) => {
-    
+    setSaving(true);
+
+    try {
+      let imageId = values.image[0];
+      // isImageChanged görüntü değiştiğinde true olur
+      console.log(isImageChanged);
+      if(isImageChanged){
+        console.log("test1")
+        // Eski görüntü silindi
+        await deleteVehicleImage(imageId);
+
+        // Yeni görüntü upload edildi
+        const formData = new FormData();
+        formData.append("file", fileImageRef.current.files[0]);
+
+        const resp = await uploadVehicleImage(formData);
+        imageId = resp.data.imageId;
+        isImageChanged = false;
+      }
+
+       // ARaç güncellendi
+       const payload = { ...values};
+       delete payload.image;
+
+       await updateVehicle(vehicleId, imageId, payload);
+       toast("Vehicle is updated", "success");
+       navigate(-1);
+      
+    } catch (err) {
+      console.log(err);
+      toast(err.response.data.message, "error");
+    }
+    finally{
+      setSaving(false);
+    }
+
+
+
   };
 
   const formik = useFormik({
@@ -58,7 +106,68 @@ const AdminVehicleEdit = () => {
     enableReinitialize: true,
   });
 
+  const loadData = async () => {
+    try {
+      const resp = await getVehicle(vehicleId);
+      setInitialValues(resp.data);
+      setImageSrc(`${settings.apiURL}/files/display/${resp.data.image[0]}`);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleSelectImage = () => {
+    fileImageRef.current.click();
+  };
+
+  const handleImageChange = () => {
+    const file = fileImageRef.current.files[0];
+    if (!file) return;
+
+    if (!["image/png", "image/jpg"].includes(file.type)) {
+      toast("Please select an image file", "error");
+      return;
+    }
+    
+    isImageChanged=true;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onloadend = () => {
+      setImageSrc(reader.result);
+    };
+  };
+
+  const removeVehicle = async () => {
+    setDeleting(true);
+    try {
+      await deleteVehicle(vehicleId);
+      toast("Vehicle was deleted", "success");
+      navigate(-1);
+    } catch (err) {
+      toast(err.response.data.message, "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDelete = () => {
+    question(
+      "Are you sure to delete?",
+      "You won't be able to revert this!"
+    ).then((result) => {
+      if (result.isConfirmed) {
+        removeVehicle();
+      }
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return loading ? (
     <Loading />
@@ -74,7 +183,11 @@ const AdminVehicleEdit = () => {
               onChange={handleImageChange}
               ref={fileImageRef}
             />
-            <img src={imageSrc} className="img-fluid" alt="..."/>
+            <img
+              src={imageSrc}
+              className={imageSrc ? "img-fluid" : "d-none"}
+              alt="..."
+            />
             {formik.errors.image && (
               <Badge bg="danger" className="image-area-error">
                 Please select an image
@@ -94,7 +207,8 @@ const AdminVehicleEdit = () => {
                 <Form.Control
                   type="text"
                   {...formik.getFieldProps("model")}
-                  className={isError("model") && "is-invalid"}
+                  isInvalid={formik.touched.model && formik.errors.model}
+                  isValid={formik.touched.model && !formik.errors.model}
                 />
                 <Form.Control.Feedback type="invalid">
                   {formik.errors.model}
@@ -105,7 +219,8 @@ const AdminVehicleEdit = () => {
                 <Form.Control
                   type="number"
                   {...formik.getFieldProps("doors")}
-                  className={isError("doors") && "is-invalid"}
+                  isInvalid={formik.touched.doors && formik.errors.doors}
+                  isValid={formik.touched.doors && !formik.errors.doors}
                 />
                 <Form.Control.Feedback type="invalid">
                   {formik.errors.doors}
@@ -116,7 +231,8 @@ const AdminVehicleEdit = () => {
                 <Form.Control
                   type="number"
                   {...formik.getFieldProps("seats")}
-                  className={isError("seats") && "is-invalid"}
+                  isInvalid={formik.touched.seats && formik.errors.seats}
+                  isValid={formik.touched.seats && !formik.errors.seats}
                 />
                 <Form.Control.Feedback type="invalid">
                   {formik.errors.seats}
@@ -127,7 +243,8 @@ const AdminVehicleEdit = () => {
                 <Form.Control
                   type="number"
                   {...formik.getFieldProps("luggage")}
-                  className={isError("luggage") && "is-invalid"}
+                  isInvalid={formik.touched.luggage && formik.errors.luggage}
+                  isValid={formik.touched.luggage && !formik.errors.luggage}
                 />
                 <Form.Control.Feedback type="invalid">
                   {formik.errors.luggage}
@@ -137,7 +254,12 @@ const AdminVehicleEdit = () => {
                 <Form.Label>Transmission</Form.Label>
                 <Form.Select
                   {...formik.getFieldProps("transmission")}
-                  className={isError("transmission") && "is-invalid"}
+                  isInvalid={
+                    formik.touched.transmission && formik.errors.transmission
+                  }
+                  isValid={
+                    formik.touched.transmission && !formik.errors.transmission
+                  }
                 >
                   <option>Select</option>
                   <option value="Automatic">Automatic</option>
@@ -152,7 +274,14 @@ const AdminVehicleEdit = () => {
                 <Form.Label>Air Conditioning</Form.Label>
                 <Form.Select
                   {...formik.getFieldProps("airConditioning")}
-                  className={isError("airConditioning") && "is-invalid"}
+                  isInvalid={
+                    formik.touched.airConditioning &&
+                    formik.errors.airConditioning
+                  }
+                  isValid={
+                    formik.touched.airConditioning &&
+                    !formik.errors.airConditioning
+                  }
                 >
                   <option>Select</option>
                   <option value={true}>Yes</option>
@@ -166,7 +295,8 @@ const AdminVehicleEdit = () => {
                 <Form.Label>Fuel Type</Form.Label>
                 <Form.Select
                   {...formik.getFieldProps("fuelType")}
-                  className={isError("fuelType") && "is-invalid"}
+                  isInvalid={formik.touched.fuelType && formik.errors.fuelType}
+                  isValid={formik.touched.fuelType && !formik.errors.fuelType}
                 >
                   <option>Select</option>
                   <option value="Electricity">Electricity</option>
@@ -186,7 +316,8 @@ const AdminVehicleEdit = () => {
                 <Form.Control
                   type="number"
                   {...formik.getFieldProps("age")}
-                  className={isError("age") && "is-invalid"}
+                  isInvalid={formik.touched.age && formik.errors.age}
+                  isValid={formik.touched.age && !formik.errors.age}
                 />
                 <Form.Control.Feedback type="invalid">
                   {formik.errors.age}
@@ -197,7 +328,12 @@ const AdminVehicleEdit = () => {
                 <Form.Control
                   type="number"
                   {...formik.getFieldProps("pricePerHour")}
-                  className={isError("pricePerHour") && "is-invalid"}
+                  isInvalid={
+                    formik.touched.pricePerHour && formik.errors.pricePerHour
+                  }
+                  isValid={
+                    formik.touched.pricePerHour && !formik.errors.pricePerHour
+                  }
                 />
                 <Form.Control.Feedback type="invalid">
                   {formik.errors.pricePerHour}
@@ -207,7 +343,7 @@ const AdminVehicleEdit = () => {
           </Col>
         </Row>
       </fieldset>
-      
+
       {initialValues.builtIn && (
         <Alert variant="danger" className="mt-5">
           Built-in vehicles can not be deleted and updated

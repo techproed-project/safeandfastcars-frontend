@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import PasswordInput from "../../common/password-input/password-input";
 import { toast } from "../../../utils/functions/swal";
+import { updatePassword } from "../../../api/user-service";
 
 const PasswordForm = () => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ const PasswordForm = () => {
       .min(8, "Must be at least 8 characters")
       .matches(/[a-z]+/, "One lowercase character")
       .matches(/[A-Z]+/, "One uppercase character")
-      .matches(/[@$!%*#?&]+/, "One special character")
+      .matches(/[@$!%*#?&.-^]+/, "One special character")
       .matches(/\d+/, "One number"),
     confirmNewPassword: Yup.string()
       .required("Please re-enter your new password")
@@ -29,7 +30,18 @@ const PasswordForm = () => {
   });
 
   const onSubmit = async (values) => {
-   
+    setLoading(true);
+
+    try {
+      await updatePassword(values);
+      toast("Your password is updated", "success");
+      formik.resetForm();
+    } catch (err) {
+      console.log(err);
+      toast(err.response.data.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formik = useFormik({

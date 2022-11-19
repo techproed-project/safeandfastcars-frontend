@@ -13,6 +13,12 @@ import {
 import * as Yup from "yup";
 import ReactInputMask from "react-input-mask-next";
 import Loading from "../../common/loading/loading";
+import {
+  deleteUserById,
+  getUserById,
+  updateUserById,
+} from "../../../api/user-service";
+import { question, toast } from "../../../utils/functions/swal";
 
 const AdminUserEdit = () => {
   const [saving, setSaving] = useState(false);
@@ -39,14 +45,30 @@ const AdminUserEdit = () => {
     lastName: Yup.string().required("Please enter your last name"),
     phoneNumber: Yup.string("Please enter your phone number").required(),
     email: Yup.string().email().required("Please enter your email"),
-
     address: Yup.string().required("Please enter your address"),
     zipCode: Yup.string().required("Please enter your zip code"),
     roles: Yup.array().required("Please select a role"),
     password: Yup.string(),
   });
 
-  const onSubmit = async (values) => {};
+  const onSubmit = async (values) => {
+    setSaving(true);
+
+    const data = { ...values };
+
+    if (!data.password) {
+      delete data.password;
+    }
+
+    try {
+      await updateUserById(userId, data);
+      toast("User is updated", "success");
+    } catch (err) {
+      toast(err.response.data.message, "error");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const formik = useFormik({
     initialValues,
@@ -54,6 +76,45 @@ const AdminUserEdit = () => {
     onSubmit,
     enableReinitialize: true, // sonradan formik initialValues değerini tekrar initialize yapmak için kullandık
   });
+
+  const loadData = async () => {
+    try {
+      const resp = await getUserById(userId);
+      setInitialValues({ ...resp.data, password: "" });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeUser = async () => {
+    setDeleting(true);
+    try {
+      await deleteUserById(userId);
+      toast("User was deleted", "success");
+      navigate(-1);
+    } catch (err) {
+      toast(err.response.data.message, "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDelete = () => {
+    question(
+      "Are you sure to delete?",
+      "You won't be able to revert this!"
+    ).then((result) => {
+      if (result.isConfirmed) {
+        removeUser();
+      }
+    });
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return loading ? (
     <Loading />

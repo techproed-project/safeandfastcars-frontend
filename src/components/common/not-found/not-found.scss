@@ -1,0 +1,20 @@
+@use "../../../assets/scss/mixins" as m;
+
+.not-found{
+    text-align: center;
+    position: relative;
+    min-height: 60vh;
+    @include m.flexbox(column, center, center,0);
+
+    &::after{
+        content:"404";
+        position:absolute;
+        top:50%;
+        left:50%;
+        font-size:30vh;
+        transform:translate(-50%,-50%);
+        color:#efefef;
+        font-weight:800;
+        z-index:-1;
+    }
+}

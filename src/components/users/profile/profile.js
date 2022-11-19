@@ -6,7 +6,7 @@ import PasswordForm from "./password-form";
 import ProfileForm from "./profile-form";
 
 const Profile = () => {
-  const user = useSelector(state=> state.auth.user);
+  const { user } = useSelector((state) => state.auth);
 
   return (
     <Container>

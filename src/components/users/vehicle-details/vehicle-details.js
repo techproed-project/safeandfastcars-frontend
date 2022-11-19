@@ -38,7 +38,7 @@ const VehicleDetails = ({ setTitle }) => {
       {loading ? (
         <Loading />
       ) : (
-        <Row>
+        <Row className="gy-5">
           <Col lg={8}>
             <div className="title">
               <h1>{vehicle.model}</h1>

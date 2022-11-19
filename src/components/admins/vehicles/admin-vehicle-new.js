@@ -1,16 +1,27 @@
 import React, { useState, useRef } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Form, Button, Row, Col, ButtonGroup, Badge, Spinner } from "react-bootstrap";
-import "./admin-vehicle.scss";
-import { createVehicle, uploadVehicleImage } from "../../../api/vehicle-service";
-import { toast } from "../../../utils/functions/swal";
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  ButtonGroup,
+  Badge,
+  Spinner,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../../../utils/functions/swal";
+import {
+  createVehicle,
+  uploadVehicleImage,
+} from "../../../api/vehicle-service";
+import "./admin-vehicle.scss";
 
 const AdminVehicleNew = () => {
-  const [imageSrc, setImageSrc] = useState("");
   const [loading, setLoading] = useState(false);
-  const fileImageRef = useRef();
+  const [imageSrc, setImageSrc] = useState("");
+  const fileImageRef = useRef(null);
   const navigate = useNavigate();
 
   const initialValues = {
@@ -43,30 +54,26 @@ const AdminVehicleNew = () => {
 
   const onSubmit = async (values) => {
     setLoading(true);
-
     try {
       const formData = new FormData();
       formData.append("file", values.image);
 
       const resp = await uploadVehicleImage(formData);
-      const imageId = resp.data.imageId;
+      const { imageId } = resp.data;
 
-      const payload = {...values};
+      const payload = { ...values};
       delete payload.image;
 
+
       await createVehicle(imageId, payload);
-      toast("Vehicle was created", "success");
+      toast("Vehicle is created", "success");
       navigate(-1);
-
-
     } catch (err) {
       console.log(err);
       toast(err.response.data.message, "error");
-    }
-    finally{
+    } finally {
       setLoading(false);
     }
-
   };
 
   const formik = useFormik({
@@ -78,24 +85,29 @@ const AdminVehicleNew = () => {
   const handleSelectImage = () => {
     fileImageRef.current.click();
   };
+
   const handleImageChange = () => {
     const file = fileImageRef.current.files[0];
     if (!file) return;
 
-    formik.setFieldValue("image", file); 
-    //formik state ini manuel olarak set ettik.Seçilen dosyayı image alanına yerleştirdik.
+    if (!["image/png", "image/jpg"].includes(file.type)) {
+      toast("Please select an image file", "error");
+      return;
+    }
 
-    const reader = new FileReader(); //Seçilen görüntüyü ekrana yerleştirdik
+    formik.setFieldValue("image", file);
+    // formik state manuel olarak set edildi. Yani seçilen dosyayı image alanına yerleştirdik
+
+    const reader = new FileReader();
     reader.readAsDataURL(file);
 
     reader.onloadend = () => {
+      console.log("ended");
       setImageSrc(reader.result);
     };
+
   };
 
-  const isError = (field) => {
-    return formik.touched[field] && formik.errors[field];
-  };
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Row>
@@ -104,10 +116,10 @@ const AdminVehicleNew = () => {
             type="file"
             name="image"
             className="d-none"
-            onChange={handleImageChange}
             ref={fileImageRef}
+            onChange={handleImageChange}
           />
-          <img src={imageSrc} className="img-fluid" alt="..."/>
+          <img src={imageSrc} className={imageSrc ? "img-fluid" : "d-none"} alt="..." />
           {formik.errors.image && (
             <Badge bg="danger" className="image-area-error">
               Please select an image
@@ -127,7 +139,8 @@ const AdminVehicleNew = () => {
               <Form.Control
                 type="text"
                 {...formik.getFieldProps("model")}
-                className={isError("model") && "is-invalid"}
+                isInvalid={formik.touched.model && formik.errors.model}
+                isValid={formik.touched.model && !formik.errors.model}
               />
               <Form.Control.Feedback type="invalid">
                 {formik.errors.model}
@@ -138,7 +151,8 @@ const AdminVehicleNew = () => {
               <Form.Control
                 type="number"
                 {...formik.getFieldProps("doors")}
-                className={isError("doors") && "is-invalid"}
+                isInvalid={formik.touched.doors && formik.errors.doors}
+                isValid={formik.touched.doors && !formik.errors.doors}
               />
               <Form.Control.Feedback type="invalid">
                 {formik.errors.doors}
@@ -149,7 +163,8 @@ const AdminVehicleNew = () => {
               <Form.Control
                 type="number"
                 {...formik.getFieldProps("seats")}
-                className={isError("seats") && "is-invalid"}
+                isInvalid={formik.touched.seats && formik.errors.seats}
+                isValid={formik.touched.seats && !formik.errors.seats}
               />
               <Form.Control.Feedback type="invalid">
                 {formik.errors.seats}
@@ -160,7 +175,8 @@ const AdminVehicleNew = () => {
               <Form.Control
                 type="number"
                 {...formik.getFieldProps("luggage")}
-                className={isError("luggage") && "is-invalid"}
+                isInvalid={formik.touched.luggage && formik.errors.luggage}
+                isValid={formik.touched.luggage && !formik.errors.luggage}
               />
               <Form.Control.Feedback type="invalid">
                 {formik.errors.luggage}
@@ -170,7 +186,12 @@ const AdminVehicleNew = () => {
               <Form.Label>Transmission</Form.Label>
               <Form.Select
                 {...formik.getFieldProps("transmission")}
-                className={isError("transmission") && "is-invalid"}
+                isInvalid={
+                  formik.touched.transmission && formik.errors.transmission
+                }
+                isValid={
+                  formik.touched.transmission && !formik.errors.transmission
+                }
               >
                 <option>Select</option>
                 <option value="Automatic">Automatic</option>
@@ -185,7 +206,14 @@ const AdminVehicleNew = () => {
               <Form.Label>Air Conditioning</Form.Label>
               <Form.Select
                 {...formik.getFieldProps("airConditioning")}
-                className={isError("airConditioning") && "is-invalid"}
+                isInvalid={
+                  formik.touched.airConditioning &&
+                  formik.errors.airConditioning
+                }
+                isValid={
+                  formik.touched.airConditioning &&
+                  !formik.errors.airConditioning
+                }
               >
                 <option>Select</option>
                 <option value={true}>Yes</option>
@@ -199,7 +227,8 @@ const AdminVehicleNew = () => {
               <Form.Label>Fuel Type</Form.Label>
               <Form.Select
                 {...formik.getFieldProps("fuelType")}
-                className={isError("fuelType") && "is-invalid"}
+                isInvalid={formik.touched.fuelType && formik.errors.fuelType}
+                isValid={formik.touched.fuelType && !formik.errors.fuelType}
               >
                 <option>Select</option>
                 <option value="Electricity">Electricity</option>
@@ -219,7 +248,8 @@ const AdminVehicleNew = () => {
               <Form.Control
                 type="number"
                 {...formik.getFieldProps("age")}
-                className={isError("age") && "is-invalid"}
+                isInvalid={formik.touched.age && formik.errors.age}
+                isValid={formik.touched.age && !formik.errors.age}
               />
               <Form.Control.Feedback type="invalid">
                 {formik.errors.age}
@@ -230,7 +260,12 @@ const AdminVehicleNew = () => {
               <Form.Control
                 type="number"
                 {...formik.getFieldProps("pricePerHour")}
-                className={isError("pricePerHour") && "is-invalid"}
+                isInvalid={
+                  formik.touched.pricePerHour && formik.errors.pricePerHour
+                }
+                isValid={
+                  formik.touched.pricePerHour && !formik.errors.pricePerHour
+                }
               />
               <Form.Control.Feedback type="invalid">
                 {formik.errors.pricePerHour}
@@ -242,9 +277,13 @@ const AdminVehicleNew = () => {
       <div className="text-end">
         <ButtonGroup aria-label="Basic example">
           <Button variant="primary" type="submit" disabled={loading}>
-            {loading && <Spinner animation="border" size="sm"/>} Create
+            {loading && <Spinner animation="border" size="sm" />} Create
           </Button>
-          <Button variant="secondary" type="button" onClick={()=>navigate(-1)}>
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={() => navigate(-1)}
+          >
             Cancel
           </Button>
         </ButtonGroup>

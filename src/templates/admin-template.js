@@ -1,9 +1,18 @@
-import React from 'react'
+import React from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import Sidebar from "../components/admins/common/sidebar";
 
-const AdminTemplate = () => {
+const AdminTemplate = ({ children }) => {
   return (
-    <div>AdminTemplate</div>
-  )
-}
+    <Container fluid>
+      <Row>
+        <Col lg={3}>
+          <Sidebar />
+        </Col>
+        <Col lg={9} className="p-5">{children}</Col>
+      </Row>
+    </Container>
+  );
+};
 
-export default AdminTemplate
+export default AdminTemplate;

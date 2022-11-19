@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import ReactInputMask from "react-input-mask-next";
 import { useFormik } from "formik";
 import { toast } from "../../../utils/functions/swal";
+import { updateUser } from "../../../api/user-service";
 
 const ProfileForm = ({ user }) => {
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,18 @@ const ProfileForm = ({ user }) => {
   });
 
   const onSubmit = async (values) => {
-    
+    setLoading(true);
+    try {
+      await updateUser(values);
+      toast("Your profile was updated", "success");
+    } catch (err) {
+      console.log(err);
+      toast(err.response.data.message)
+    }
+    finally{
+      setLoading(false);
+    }
+
   };
 
   const formik = useFormik({

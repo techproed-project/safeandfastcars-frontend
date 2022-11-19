@@ -1,29 +1,25 @@
+@use "../../../assets/scss/variables" as v;
+
 .image-area{
-    background-color: #ececec;
-    position:relative;
+    background-color: v.$color4;
     border-radius: 2rem;
-    padding-top: 0.7rem;
+    position: relative;
 
     button{
-        position:absolute;
-        bottom:0;
-        left:0;
-        right:0;
-        opacity:0.8;
+        position: absolute;
+        bottom: 0; left:0; right:0;
     }
-    
+
     .image-area-error{
-        position:absolute;
+        position: absolute;
         left:50%;
         top:50%;
-        transform:translate(-50%,-50%);
+        transform: translate(-50%, -50%);
     }
 
     img{
         border-radius: 2rem;
         width:100%;
-        height: auto;
+        height:auto;
     }
-
-
 }
