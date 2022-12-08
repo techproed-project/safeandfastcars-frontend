@@ -14,7 +14,7 @@ export const question = (title, text = "") => {
   return Swal.fire({
     title,
     text,
-    icon: "question",
+    icon: "success",
     showCancelButton: true,
   });
 };
